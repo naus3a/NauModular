@@ -25,7 +25,7 @@ struct Tension : Module{
 void Tension::step(){
     float v = params[VOLT_PARAM].value;
     outputs[VOLT_OUTPUT].value = v;
-    lights[BLINK_LIGHT].value = abs(v)/12.0;
+    lights[BLINK_LIGHT].value = fabs(v)/12.0;
 }
 
 TensionWidget::TensionWidget(){
