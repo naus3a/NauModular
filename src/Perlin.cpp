@@ -1,5 +1,10 @@
 #include "NauModular.hpp"
 
+//#define DEBUG_PERLIN
+#ifdef DEBUG_PERLIN
+#include <iostream>
+#endif
+
 #define FASTFLOOR(x) ( ((x)>0) ? ((int)x) : (((int)x)-1) )
 
 struct Perlin : Module{
@@ -30,6 +35,9 @@ struct Perlin : Module{
     float getNoise(float x);
 
     float noisePos = 0.0;
+#ifdef DEBUG_PERLIN
+    int curSmp = 0;
+#endif
 
     unsigned char perm[512] = {151,160,137,91,90,15,
     131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
@@ -97,6 +105,10 @@ void Perlin::step(){
     outputs[NOISE_OUTPUT].value = n;
 
     noisePos += noiseSpd;
+#ifdef DEBUG_PERLIN
+    std::cout<<"Value "<<curSmp<<": "<<n<<std::endl;
+    curSmp++;
+#endif
 }
 
 PerlinWidget::PerlinWidget(){
@@ -116,7 +128,7 @@ PerlinWidget::PerlinWidget(){
     addChild(createScrew<ScrewSilver>(Vec(15, 365)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
     
-    float minSpd = 0.00001;
+    float minSpd = 0.001;
     float maxSpd = 0.015;
     float startSpd = (maxSpd-minSpd)/2 + minSpd;
     addParam(createParam<Davies1900hBlackKnob>(Vec(10, 87), module, Perlin::SPEED_PARAM, minSpd, maxSpd, startSpd));
