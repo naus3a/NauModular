@@ -4,7 +4,7 @@
 This is my personal collection of modules for [VCV Rack](https://vcvrack.com/): feel free to use them and modify them as you wish. If you find them useful, feel free to get me a beer.
 
 ### Tension
-<img align="left" src="https://raw.githubusercontent.com/naus3a/NauModular/master/tension.png" >
+<img align="left" height="100%" src="https://raw.githubusercontent.com/naus3a/NauModular/master/tension.png" >
 **Tension** is a fixed voltage generator: you turn the knob, you change the voltage. Useful when playing with logic chains or if you need to power up a virtual lamp ;) .
 
 ---
