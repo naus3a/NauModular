@@ -27,7 +27,12 @@ void init(rack::Plugin * p){
     p->addModel(createModel<PerlinWidget>("NauModular",
 					    "Perlin",
 					    "Perlin",
-					    FUNCTION_GENERATOR_TAG));
+					    NOISE_TAG));
+
+	p->addModel(createModel<S_h_itWidget>("NauModular",
+	                    "S&h(it)",
+	                    "S&h(it)",
+	                    SAMPLE_AND_HOLD_TAG));
 }
 /*  
 void NauModular::init(){

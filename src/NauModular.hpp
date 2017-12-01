@@ -45,3 +45,7 @@ struct FunctionWidget : ModuleWidget{
 struct PerlinWidget : ModuleWidget{
 	PerlinWidget();
 };
+
+struct S_h_itWidget : ModuleWidget{
+    S_h_itWidget();
+};
