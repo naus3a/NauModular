@@ -24,12 +24,14 @@ using namespace rack;
 extern Plugin * plugin;
 
 namespace NauModular{
+/*  
 #ifdef TARGET_OSX
    static clock_serv_t cs;
 #endif
     static void init();
     float getTimef();
     static void getMonotonicTime(uint64_t & seconds, uint64_t & nanos);
+*/
 };
 
 struct TensionWidget : ModuleWidget{

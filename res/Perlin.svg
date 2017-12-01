@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.7210526"
-     inkscape:cx="-74.204898"
-     inkscape:cy="172.74581"
+     inkscape:cx="-82.812672"
+     inkscape:cy="195.9874"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -38,10 +38,10 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1440"
      inkscape:window-height="856"
-     inkscape:window-x="78"
+     inkscape:window-x="39"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true">
     <sodipodi:guide
        position="18.198128,92.507965"
@@ -55,6 +55,12 @@
        position="11.376275,65.029246"
        orientation="1,0"
        id="guide4172" />
+    <sodipodi:guide
+       position="21.562501,79.94139"
+       orientation="1,0"
+       id="guide4173"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -128,12 +134,12 @@
          id="path4197" />
     </g>
     <rect
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.37500005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.49367839;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect5644"
-       width="15.680812"
-       height="11.376276"
-       x="3.9970698"
-       y="267.94437" />
+       width="15.562134"
+       height="19.866673"
+       x="4.0564089"
+       y="268.00369" />
     <g
        transform="scale(1.1938196,0.83764751)"
        style="font-style:normal;font-weight:normal;font-size:6.31729889px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -210,5 +216,19 @@
          id="path4192"
          inkscape:connector-curvature="0" />
     </g>
+    <rect
+       style="fill:#ffffff;fill-opacity:0.11764706;stroke:none;stroke-width:0.9640975;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.43137255"
+       id="rect4168"
+       width="18.824427"
+       height="13.835631"
+       x="2.2560265"
+       y="215.9827" />
+    <rect
+       y="234.23843"
+       x="2.0195189"
+       height="14.424438"
+       width="19.047871"
+       id="rect4170"
+       style="fill:#ffffff;fill-opacity:0.11764706;stroke:none;stroke-width:0.99022365;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.43137255" />
   </g>
 </svg>

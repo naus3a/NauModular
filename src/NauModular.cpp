@@ -3,7 +3,7 @@
 Plugin * plugin;
 
 void init(rack::Plugin * p){
-    NauModular::init();
+    //NauModular::init();
 
     plugin = p;
     p->slug = "NauModular";
@@ -29,7 +29,7 @@ void init(rack::Plugin * p){
 					    "Perlin",
 					    FUNCTION_GENERATOR_TAG));
 }
-
+/*  
 void NauModular::init(){
 #if defined(TARGET_OSX)
     host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &NauModular::cs);
@@ -69,3 +69,4 @@ float NauModular::getTimef(){
     float timef = seconds + ((long long)(nanos))/1000000000.;
     return timef;
 }
+*/

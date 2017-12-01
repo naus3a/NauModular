@@ -1,5 +1,5 @@
 #include "NauModular.hpp"
-#define DEBUG_PERLIN
+//#define DEBUG_PERLIN
 #ifdef DEBUG_PERLIN
 #include <iostream>
 #include <limits.h>
@@ -36,25 +36,39 @@ struct Perlin : Module{
 	NUM_LIGHTS
     };
 
-    Perlin() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS){}
+    Perlin() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS){
+        noise = new float[nOctaves];
+    }
+    ~Perlin(){
+        delete [] noise;
+    }
+
     void step() override;
 
     float grad(int hash, float x);
     float getNoise(float x);
+    void mixOctaves(float * nn);
+    
+    float getMixed(float & _val0, float & _val1, float & _mix);
+
     OutputIds octaveIndex2outputIndex(int octIdx){return OutputIds(octIdx+1);}
     ParamIds octaveIndex2paramIndex(int octIdx){return ParamIds(octIdx+4);}
     Output * getOctaveOutput(int octIdx);
     Param * getOctaveWeight(int octIdx);
-    void mixOctaves(float * nn);
     bool hasWire(InputIds _inIdx);
-
-    float minSpd = 0.001;
-    float maxSpd = 0.01;
-    float noisePos = 0.0;
-    float oldPos = 0.0;
+    
     const int nOctaves = 4;
-#ifdef DEBUG_PERLIN
-    int curSmp = 0;
+    float curTime = 0.0;
+    float minSpd = 1;
+    float maxSpd = 500;
+    float oldSpeedVal;
+    float oldSpeedPctVal;
+    float noiseOutMix;
+    float * noise;
+
+    
+#ifdef debug_perlin
+    int cursmp = 0;
 #endif
 
     unsigned char perm[512] = {151,160,137,91,90,15,
@@ -124,60 +138,45 @@ float Perlin::getNoise(float x){
 
 void Perlin::mixOctaves(float * nn){
     float totW = 0;
-    float mix = 0;
+    noiseOutMix = 0;
     for(int i=0;i<nOctaves;i++){
         float nw = getOctaveWeight(i)->value;
-        mix += nn[i]*nw;
+        noiseOutMix += nn[i]*nw;
         totW += nw;
     }
     if(totW==0)totW=1.0;
-    mix /= totW;
-    outputs[NOISE_OUTPUT].value = mix;
+    noiseOutMix /= totW;
+    outputs[NOISE_OUTPUT].value = noiseOutMix;
+}
+
+float Perlin::getMixed(float & _val0, float & _val1, float & _mix){
+    return ((_val0 * _mix)+(_val1 * (1.0-_mix)));
 }
 
 void Perlin::step(){
-    oldPos = noisePos;
-    float noiseSpd = params[SPEED_PARAM].value;
-    Port * speedPort = (Port *)(&inputs[SPEED_INPUT]);
+    float deltaTime = 1.0 / engineGetSampleRate();
+    curTime += deltaTime;
+    if(!isfinite(curTime)) curTime = 0.0;
     
+    
+    float noiseSpd = params[SPEED_PARAM].value;
     if(hasWire(SPEED_INPUT)){
-        if(inputs[SPEED_INPUT].value!=0){
-            noiseSpd = inputs[SPEED_INPUT].value/12.0*0.1 * params[SPEED_PCT_PARAM].value + noiseSpd*(1.0-params[SPEED_PCT_PARAM].value); 
-        }
-    }
-    if(noiseSpd<minSpd){
-        noiseSpd = minSpd;
+        float spdIn = inputs[SPEED_INPUT].value/12.0;
+        noiseSpd = getMixed(spdIn, noiseSpd, params[SPEED_PCT_PARAM].value);
     }
 
-    float m = params[MULT_PARAM].value;
-    if(inputs[MULT_INPUT].value!=0){
-	    m *= inputs[MULT_INPUT].value/12.0 * (1.0+params[MULT_PCT_PARAM].value);
-	    m += 0.3;
-    }
+    float noiseAmp = params[MULT_PARAM].value;
+    float ampIn = inputs[MULT_INPUT].value;
+    noiseAmp = getMixed(ampIn, noiseAmp, params[MULT_PCT_PARAM].value);
     
     float octMult = 1.0;
-    float n[nOctaves];
     for(int i=0;i<nOctaves;i++){
-        n[i] = getNoise(noisePos*octMult);
-        n[i] *= m;
-        getOctaveOutput(i)->value = n[i];
-        octMult *= 2.0;
+        noise[i] = noiseAmp * getNoise(curTime * noiseSpd * octMult);
+        getOctaveOutput(i)->value = noise[i];
+        octMult *= 2;
     }
-    mixOctaves(n);
-    
-    noisePos += noiseSpd;
-    if(noisePos > std::numeric_limits<float>::max() )noisePos=0.0;
-    if(noisePos == oldPos){
-        noisePos += 0.1;
-    }
-    //sometimes noisePos get stuck.
-#ifdef DEBUG_PERLIN
-    //std::cout<<"Value "<<curSmp<<": "<<n<<std::endl;
-    //curSmp++;
-    std::cout<<"pos: "<<noisePos<<" spd: "<<noiseSpd;
-    if(oldPos==noisePos)std::cout<<" BOOM";
-    std::cout<<std::endl;
-#endif
+
+    mixOctaves(noise);
 }
 
 PerlinWidget::PerlinWidget(){
@@ -200,8 +199,8 @@ PerlinWidget::PerlinWidget(){
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
     
     float startSpd = (module->maxSpd-module->minSpd)/2 + module->minSpd;
-    addParam(createParam<Davies1900hBlackKnob>(Vec(10, 87), module, Perlin::SPEED_PARAM, module->minSpd, module->maxSpd, startSpd));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 100), module, Perlin::SPEED_PCT_PARAM, 0.0, 1.0, 0.5)); 
+    addParam(createParam<Davies1900hBlackKnob>(Vec(10, 83), module, Perlin::SPEED_PARAM, module->minSpd, module->maxSpd, startSpd));
+    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 100), module, Perlin::SPEED_PCT_PARAM, 0.0, 1.0, 0.5));
 
     addParam(createParam<Davies1900hBlackKnob>(Vec(10, 150), module, Perlin::MULT_PARAM, 1.0, 10.0, 1.0));
     addParam(createParam<RoundSmallBlackKnob>(Vec(55, 167), module, Perlin::MULT_PCT_PARAM, 0.0, 1.0, 0.5));
