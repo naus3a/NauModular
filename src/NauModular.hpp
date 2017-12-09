@@ -49,3 +49,7 @@ struct PerlinWidget : ModuleWidget{
 struct S_h_itWidget : ModuleWidget{
     S_h_itWidget();
 };
+
+struct BitHammerWidget : ModuleWidget{
+    BitHammerWidget();
+};

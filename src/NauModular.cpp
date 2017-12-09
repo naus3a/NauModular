@@ -33,6 +33,11 @@ void init(rack::Plugin * p){
 	                    "S&h(it)",
 	                    "S&h(it)",
 	                    SAMPLE_AND_HOLD_TAG));
+
+	p->addModel(createModel<BitHammerWidget>("NauModular",
+	                        "BitHammer",
+	                        "BitHammer",
+	                        LOGIC_TAG));
 }
 /*  
 void NauModular::init(){
