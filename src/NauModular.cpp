@@ -10,8 +10,8 @@ void init(rack::Plugin * p){
 #ifdef VERSION
     p->version = TOSTRING(VERSION);
 #endif
-    p->website = "http://naus3a.ml";
-    p->manual = "http://naus3a.ml";
+    p->website = "http://naus3a.github.io/NauModular";
+    p->manual = "http://naus3a.github.io/NauModular";
 
     p->addModel(createModel<TensionWidget>("NauModular", 
 					    "Tension", 
