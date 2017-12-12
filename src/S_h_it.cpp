@@ -29,7 +29,7 @@ struct S_h_it : Module{
 void S_h_it::step(){
     float deltaTime = 1.0 / engineGetSampleRate();
     curTime += deltaTime;
-    if(!isfinite(curTime)) curTime = 0.0;
+    if(!std::isfinite(curTime)) curTime = 0.0;
     
     float timeElapsed = fabs(curTime-lastTime);
     float timeInterval = params[TIME_PARAM].value / params[MULT_PARAM].value;

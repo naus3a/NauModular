@@ -1,5 +1,5 @@
 #include "NauModular.hpp"
-//#define DEBUG_PERLIN
+#define DEBUG_PERLIN
 #ifdef DEBUG_PERLIN
 #include <iostream>
 #include <limits.h>
@@ -45,7 +45,7 @@ struct Perlin : Module{
 
     void step() override;
 
-    float grad(int hash, float x);
+float grad(int hash, float x);
     float getNoise(float x);
     void mixOctaves(float * nn);
     
@@ -133,7 +133,7 @@ float Perlin::getNoise(float x){
     n0 = t0*t0*grad(perm[i0 & 0xff], x0);
     t1 *= t1;
     n1 = t1*t1*grad(perm[i1 & 0xff], x1);
-    return 0.25 * (n0+n1);
+    return (0.25 * (n0+n1));
 }
 
 void Perlin::mixOctaves(float * nn){
@@ -154,21 +154,17 @@ float Perlin::getMixed(float & _val0, float & _val1, float & _mix){
 }
 
 void Perlin::step(){
-    float deltaTime = 1.0 / engineGetSampleRate();
+    float deltaTime = 1.0/engineGetSampleRate();
     curTime += deltaTime;
-    if(!isfinite(curTime)) curTime = 0.0;
-    
-    
-    float noiseSpd = params[SPEED_PARAM].value;
-    if(hasWire(SPEED_INPUT)){
-        float spdIn = inputs[SPEED_INPUT].value/12.0;
-        noiseSpd = getMixed(spdIn, noiseSpd, params[SPEED_PCT_PARAM].value);
-    }
+
+    float noiseSpd = params[SPEED_INPUT].value;
+    float spdIn = inputs[SPEED_INPUT].value/5.0;
+    noiseSpd = getMixed(spdIn, noiseSpd, params[SPEED_PCT_PARAM].value);
 
     float noiseAmp = params[MULT_PARAM].value;
     float ampIn = inputs[MULT_INPUT].value;
-    noiseAmp = getMixed(ampIn, noiseAmp, params[MULT_PCT_PARAM].value);
-    
+    noiseAmp =  getMixed(ampIn, noiseAmp, params[MULT_PCT_PARAM].value);
+
     float octMult = 1.0;
     for(int i=0;i<nOctaves;i++){
         noise[i] = noiseAmp * getNoise(curTime * noiseSpd * octMult);
@@ -177,6 +173,9 @@ void Perlin::step(){
     }
 
     mixOctaves(noise);
+
+    //std::cout<<"cippa "<<curTime<<std::endl;
+
 }
 
 PerlinWidget::PerlinWidget(){
