@@ -11,6 +11,7 @@
 #endif
 
 #include <time.h>
+#include <iostream>
 
 #if defined(TARGET_OSX)
 #include <mach/clock.h>
@@ -53,3 +54,8 @@ struct S_h_itWidget : ModuleWidget{
 struct BitHammerWidget : ModuleWidget{
     BitHammerWidget();
 };
+
+struct OscWidget : ModuleWidget{
+    OscWidget();
+};
+

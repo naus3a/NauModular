@@ -34,7 +34,7 @@ The lowest, central output is the *mix output*, giving you a mix of the noise oc
 ### BitHammer
 **BitHammer** is a logic module performing bitwise operations on 2 inputs. The incoming values are rendered as bits, hammered, reassembled as virtual voltages and finally sent out to the 6 outputs.
 
-![BitHammer](https//raw.githubusercontent.com/naus3a/NauModular/master/bithammer.png "BitHammer")
+![BitHammer](https://raw.githubusercontent.com/naus3a/NauModular/master/bithammer.png "BitHammer")
 
 ---
 

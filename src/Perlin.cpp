@@ -156,15 +156,30 @@ float Perlin::getMixed(float & _val0, float & _val1, float & _mix){
 void Perlin::step(){
     float deltaTime = 1.0/engineGetSampleRate();
     curTime += deltaTime;
+/*      
+    auto now = std::chrono::system_clock::now();
+    time_t t = std::chrono::system_clock::to_time_t(now);
+    std::chrono::duration<double> s = now - std::chrono::system_clock::from_time_t(t);
+    auto ms = s.count();
+	auto tm = *std::localtime(&t);
+  
+    float timef = 60*tm.tm_min;
+    timef += tm.tm_sec;
+    timef += ms;
 
+    curTime = timef;
+*/
     float noiseSpd = params[SPEED_INPUT].value;
-    float spdIn = inputs[SPEED_INPUT].value/5.0;
-    noiseSpd = getMixed(spdIn, noiseSpd, params[SPEED_PCT_PARAM].value);
+    if(inputs[SPEED_INPUT].active){
+        float spdIn = inputs[SPEED_INPUT].value/5.0;
+        noiseSpd = getMixed(spdIn, noiseSpd, params[SPEED_PCT_PARAM].value);
+    }
 
     float noiseAmp = params[MULT_PARAM].value;
-    float ampIn = inputs[MULT_INPUT].value;
-    noiseAmp =  getMixed(ampIn, noiseAmp, params[MULT_PCT_PARAM].value);
-
+    if(inputs[MULT_INPUT].active){
+        float ampIn = inputs[MULT_INPUT].value;
+        noiseAmp =  getMixed(ampIn, noiseAmp, params[MULT_PCT_PARAM].value);
+    }
     float octMult = 1.0;
     for(int i=0;i<nOctaves;i++){
         noise[i] = noiseAmp * getNoise(curTime * noiseSpd * octMult);

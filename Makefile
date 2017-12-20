@@ -4,7 +4,7 @@ FLAGS +=
 CFLAGS +=
 CXXFLAGS +=
 
-VERSION = "1.0"
+VERSION = "0.5.2"
 
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.

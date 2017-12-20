@@ -9,6 +9,7 @@ void init(rack::Plugin * p){
     p->slug = "NauModular";
 #ifdef VERSION
     p->version = TOSTRING(VERSION);
+    
 #endif
     p->website = "http://naus3a.github.io/NauModular";
     p->manual = "http://naus3a.github.io/NauModular";
@@ -38,6 +39,10 @@ void init(rack::Plugin * p){
 	                        "BitHammer",
 	                        "BitHammer",
 	                        LOGIC_TAG));
+   p->addModel(createModel<OscWidget>("NauModular",
+                            "Osc",
+                            "Osc",
+                            CONTROLLER_TAG));
 }
 /*  
 void NauModular::init(){
