@@ -1,23 +1,17 @@
 #include "rack.hpp"
 
-#if (defined(__APPLE__) && defined(__MACH__))
-#define TARGET_OSX    
-#elif (defined(unix) || defined(__unix__) || defined(__unix))
-#define TARGET_LINUX
-#elif (defined(__WINDOWS__) || defined(__WIN32__) || defined(_WIN32) || defined(_WIN64))
-#define TARGET_WINDOWS
-#else
-#define TARGET_UNKNOWN
-#endif
-
 #include <time.h>
 #include <iostream>
 
-#if defined(TARGET_OSX)
+#ifdef ARCH_MAC
 #include <mach/clock.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/clock_types.h>
+#endif
+
+#ifdef ARCH_LIN
+#include <string.h>
 #endif
 
 using namespace rack;
