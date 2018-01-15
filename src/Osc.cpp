@@ -1,12 +1,19 @@
 #include "NauModular.hpp"
 #include <iostream>
+
+#if ARCH_WIN
+#include <Winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <arpa/inet.h>
+#include <sys/select.h>
+#endif
+
 #include <fcntl.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/select.h>
 #include "tinyosc.h"
 #include "dsp/digital.hpp"
  
@@ -110,13 +117,33 @@ Osc::Osc() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS), bufLen(102
 
     trigIn.setThresholds(0,2);
 
+#if ARCH_WIN
+    WSADATA wsaData;
+    WORD versionRequested = MAKEWORD(2,2);
+    if(WSAStartup(versionRequested, &wsaData) != 0) {
+        std::cout<<"OSC ERROR: Failed to start Windows networking"<<std::endl;
+        return;
+    }
+#endif
+
     makeUDPSocket();
 }
 
 Osc::~Osc(){
+#if ARCH_WIN
+    if(bReady && (closesocket(s) != 0)) {
+        std::cout << "OSC ERROR: Failed to close socket: " << WSAGetLastError() << std::endl;
+    }
+#else
     if(bReady)close(s);
+#endif
+
     delete [] buffer;
     delete [] bufMsgOut;
+
+#if ARCH_WIN
+    WSACleanup();
+#endif
 }
 
 void Osc::makeUDPSocket(){
@@ -124,6 +151,9 @@ void Osc::makeUDPSocket(){
     if(s==-1){
         std::cout<<"OSC ERROR: cannot create socket"<<std::endl;
         bReady = false;
+#if ARCH_WIN
+        WSACleanup();
+#endif
         return;
     }
 
@@ -137,15 +167,30 @@ void Osc::makeUDPSocket(){
     memset((char *)&si_other, 0 , sizeof(si_other));
     si_other.sin_family = AF_INET;
     si_other.sin_port = htons(portOut);
+
+#ifdef ARCH_WIN
+    const unsigned long addr = inet_addr(ipOut.c_str());
+    if ((addr == INADDR_NONE) || (addr == INADDR_ANY)){
+        std::cout<<"OSC ERROR: remote IP is not valid"<<std::endl;
+        bReady = false;
+        WSACleanup();
+        return;
+    }
+    si_other.sin_addr.S_un.S_addr = addr;
+#else
     if(inet_aton(ipOut.c_str(), &si_other.sin_addr)==0){
         std::cout<<"OSC ERROR: remote IP is not valid"<<std::endl;
         bReady = false;
         return;
     }
+#endif
 
     if(bind(s, (struct sockaddr*)&si_me, sizeof(si_me) ) == -1){
         std::cout<<"OSC ERROR: cannot bind socket"<<std::endl;
         bReady = false;
+#if ARCH_WIN
+        WSACleanup();
+#endif
         return;
     }
     
