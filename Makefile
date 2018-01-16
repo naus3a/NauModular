@@ -6,9 +6,15 @@ CXXFLAGS +=
 
 VERSION = "0.5.2"
 
+include ../../arch.mk
+
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.
-LDFLAGS +=
+ifeq ($(ARCH), win)
+	LDFLAGS += -lws2_32
+else
+	LDFLAGS +=
+endif
 
 # Add .cpp and .c files to the build
 SOURCES = $(wildcard src/*.cpp)
