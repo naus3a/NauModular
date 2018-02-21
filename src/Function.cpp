@@ -8,7 +8,7 @@ struct Function : Module{
     enum InputIds {
 	X_INPUT,
     	NUM_INPUTS
-    }; 	
+    };
     enum OutputIds{
 	ELLIPSE_OUTPUT,
 	PARABOLA_OUTPUT,
@@ -34,9 +34,11 @@ void Function::step(){
     outputs[PARABOLA_OUTPUT].value = v*v*a;
 }
 
-FunctionWidget::FunctionWidget(){
-    Function * module = new Function();
-    setModule(module);
+struct FunctionWidget : ModuleWidget{
+	FunctionWidget(Function *module);
+};
+
+FunctionWidget::FunctionWidget(Function *module) : ModuleWidget(module){
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
@@ -46,16 +48,18 @@ FunctionWidget::FunctionWidget(){
 	addChild(panel);
     }
 
-    addChild(createScrew<ScrewSilver>(Vec(15, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(15, 365)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
-   
-    addParam(createParam<Davies1900hBlackKnob>(Vec(50, 87), module, Function::A_PARAM, -5.0, 5.0, 0.0));
-   
-    addInput(createInput<PJ301MPort>(Vec(15, 87), module, Function::X_INPUT));
+    addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-    addOutput(createOutput<PJ301MPort>(Vec(15,150), module, Function::HYPERBOLA_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(15,220), module, Function::PARABOLA_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(15,300), module, Function::ELLIPSE_OUTPUT));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(50, 87), module, Function::A_PARAM, -5.0, 5.0, 0.0));
+
+    addInput(Port::create<PJ301MPort>(Vec(15, 87), Port::INPUT, module, Function::X_INPUT));
+
+    addOutput(Port::create<PJ301MPort>(Vec(15,150), Port::OUTPUT, module, Function::HYPERBOLA_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(15,220), Port::OUTPUT, module, Function::PARABOLA_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(15,300), Port::OUTPUT, module, Function::ELLIPSE_OUTPUT));
 };
+
+Model *modelFunction = Model::create<Function, FunctionWidget>("NauModular", "Function", "Function", FUNCTION_GENERATOR_TAG);

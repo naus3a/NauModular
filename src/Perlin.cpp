@@ -193,9 +193,11 @@ void Perlin::step(){
 
 }
 
-PerlinWidget::PerlinWidget(){
-    Perlin *module = new Perlin();
-    setModule(module);
+struct PerlinWidget : ModuleWidget{
+	PerlinWidget(Perlin *module);
+};
+
+PerlinWidget::PerlinWidget(Perlin *module) : ModuleWidget(module){
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
@@ -207,28 +209,30 @@ PerlinWidget::PerlinWidget(){
 
     
 
-    addChild(createScrew<ScrewSilver>(Vec(15, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(15, 365)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 365)));
     
     float startSpd = (module->maxSpd-module->minSpd)/2 + module->minSpd;
-    addParam(createParam<Davies1900hBlackKnob>(Vec(10, 83), module, Perlin::SPEED_PARAM, module->minSpd, module->maxSpd, startSpd));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 100), module, Perlin::SPEED_PCT_PARAM, 0.0, 1.0, 0.5));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(10, 83), module, Perlin::SPEED_PARAM, module->minSpd, module->maxSpd, startSpd));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(55, 100), module, Perlin::SPEED_PCT_PARAM, 0.0, 1.0, 0.5));
 
-    addParam(createParam<Davies1900hBlackKnob>(Vec(10, 150), module, Perlin::MULT_PARAM, 1.0, 10.0, 1.0));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(55, 167), module, Perlin::MULT_PCT_PARAM, 0.0, 1.0, 0.5));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(15, 205), module, Perlin::WGT0_PARAM, 0.0,1.0,0.25));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(50, 205), module, Perlin::WGT1_PARAM, 0.0,1.0,0.25));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(15, 235), module, Perlin::WGT2_PARAM, 0.0,1.0,0.25));
-    addParam(createParam<RoundSmallBlackKnob>(Vec(50, 235), module, Perlin::WGT3_PARAM, 0.0,1.0,0.25));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(10, 150), module, Perlin::MULT_PARAM, 1.0, 10.0, 1.0));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(55, 167), module, Perlin::MULT_PCT_PARAM, 0.0, 1.0, 0.5));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(15, 205), module, Perlin::WGT0_PARAM, 0.0,1.0,0.25));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(50, 205), module, Perlin::WGT1_PARAM, 0.0,1.0,0.25));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(15, 235), module, Perlin::WGT2_PARAM, 0.0,1.0,0.25));
+    addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(50, 235), module, Perlin::WGT3_PARAM, 0.0,1.0,0.25));
 
-    addInput(createInput<PJ301MPort>(Vec(55, 75), module, Perlin::SPEED_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(55, 140), module, Perlin::MULT_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(55, 75), Port::INPUT, module, Perlin::SPEED_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(55, 140), Port::INPUT, module, Perlin::MULT_INPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(17, 270), module, Perlin::NOISE0_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(45, 270), module, Perlin::NOISE1_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(17, 295), module, Perlin::NOISE2_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(45, 295), module, Perlin::NOISE3_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(33, 320), module, Perlin::NOISE_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(17, 270), Port::OUTPUT, module, Perlin::NOISE0_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(45, 270), Port::OUTPUT, module, Perlin::NOISE1_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(17, 295), Port::OUTPUT, module, Perlin::NOISE2_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(45, 295), Port::OUTPUT, module, Perlin::NOISE3_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(33, 320), Port::OUTPUT, module, Perlin::NOISE_OUTPUT));
 }
+
+Model *modelPerlin = Model::create<Perlin, PerlinWidget>("NauModular", "Perlin", "Perlin", NOISE_TAG);

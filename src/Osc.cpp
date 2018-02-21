@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include "tinyosc.h"
 #include "dsp/digital.hpp"
- 
+
 #define osc_strncpy(_dst, _src, _len) strncpy(_dst, _src, _len)
 
 struct Osc : Module{
@@ -48,7 +48,7 @@ struct Osc : Module{
 
     Osc();
     ~Osc();
-    
+
     void makeUDPSocket();
     void checkIncomingOsc();
     int makeFloatMsg(char * _buf, int  _bufLen, std::string _addr, float _val);
@@ -57,7 +57,7 @@ struct Osc : Module{
     void sendMsg(char * _buf, int _bufLen);
     void sendGateMsg(float _val);
     void sendTrigMsg(float _val=5.0);
-    
+
     void step() override;
     void updateGateIn();
     void updateTrigIn();
@@ -70,7 +70,7 @@ struct Osc : Module{
     void setTrigNow();
 
     bool isAnyOutputActive();
-    
+
     SchmittTrigger trigIn;
     float lastTrigInput;
     float lastTrigOutput;
@@ -88,7 +88,7 @@ struct Osc : Module{
     int i;
     socklen_t slen;
     int recv_len;
-    
+
     const int bufLen;
     const int msgBufLen;
     struct sockaddr_in si_me, si_other;
@@ -114,8 +114,6 @@ Osc::Osc() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS), bufLen(102
     thrGateOpen = 5;
     thrGateClosed = 0;
     curTime = 0;
-
-    trigIn.setThresholds(0,2);
 
 #if ARCH_WIN
     WSADATA wsaData;
@@ -193,7 +191,7 @@ void Osc::makeUDPSocket(){
 #endif
         return;
     }
-    
+
     bReady = true;
     std::cout<<"OSC listening on port "<<portIn<<" and sending at "<<ipOut<<":"<<portOut<<std::endl;
 }
@@ -207,7 +205,7 @@ void Osc::checkIncomingOsc(){
         closeLocalGate();
         return;
     }
-    
+
     if(outputs[TRIG_OUTPUT].value>0){
         if(curTime > (lastTrigOutput+0.1)){
             lights[TRIG_OUT_LIGHT].value = 0;
@@ -260,11 +258,11 @@ int Osc::makeFloatMsg(char * _buf, int  _bufLen, std::string _addr, float _val){
     int s_len = 1;
     osc_strncpy(_buf+ii, "f", _bufLen-ii-s_len);
     ii = (ii+4+s_len)& ~0x03;
-    
+
     if((ii+4)>_bufLen)return -3;
     *((uint32_t *)(_buf+ii)) = htonl(*((uint32_t *)&_val));
     ii+=4;
-    
+
     return ii;
 }
 
@@ -305,7 +303,7 @@ void Osc::step(){
 
     updateGateIn();
     updateTrigIn();
-    
+
     checkIncomingOsc();
 
 }
@@ -364,7 +362,7 @@ void Osc::updateTrigIn(){
         if(trigIn.process(curVal)){
             lights[TRIG_IN_LIGHT].value = 1.0;
             sendTrigMsg();
-            lastTrigInput = curTime;            
+            lastTrigInput = curTime;
         }
 
         if(lights[TRIG_IN_LIGHT].value>0){
@@ -379,14 +377,16 @@ void Osc::updateTrigIn(){
 }
 
 bool Osc::isAnyOutputActive(){
-    return (outputs[CV_OUTPUT].active || 
+    return (outputs[CV_OUTPUT].active ||
             outputs[GATE_OUTPUT].active ||
             outputs[TRIG_OUTPUT].active);
 }
 
-OscWidget::OscWidget(){
-    Osc * module = new Osc();
-    setModule(module); 
+struct OscWidget : ModuleWidget{
+    OscWidget(Osc *module);
+};
+
+OscWidget::OscWidget(Osc *module) : ModuleWidget(module){
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     {
     	SVGPanel *panel = new SVGPanel();
@@ -394,25 +394,25 @@ OscWidget::OscWidget(){
     	panel->setBackground(SVG::load(assetPlugin(plugin, "res/Osc.svg")));
     	addChild(panel);
     }
-    
-    addInput(createInput<PJ301MPort>(Vec(10,75), module, Osc::GATE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(55,75), module, Osc::TRIG_INPUT));
-    
-    addOutput(createOutput<PJ301MPort>(Vec(32, 170), module, Osc::CV_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(10, 270), module, Osc::GATE_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(55, 270), module, Osc::TRIG_OUTPUT));
 
-    addChild(createLight<MediumLight<BlueLight>>(Vec(16, 103), module, Osc::GATE_IN_LIGHT)); 
-    addChild(createLight<MediumLight<BlueLight>>(Vec(62, 103), module, Osc::TRIG_IN_LIGHT));
-    addChild(createLight<MediumLight<BlueLight>>(Vec(40, 200), module, Osc::CV_OUT_LIGHT));
-    addChild(createLight<MediumLight<BlueLight>>(Vec(20, 250), module, Osc::GATE_OUT_LIGHT));
-    addChild(createLight<MediumLight<BlueLight>>(Vec(60, 250), module, Osc::TRIG_OUT_LIGHT));
+    addInput(Port::create<PJ301MPort>(Vec(10,75), Port::INPUT, module, Osc::GATE_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(55,75), Port::INPUT, module, Osc::TRIG_INPUT));
 
-    addChild(createScrew<ScrewSilver>(Vec(15, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(15, 365)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
-    
+    addOutput(Port::create<PJ301MPort>(Vec(32, 170), Port::OUTPUT, module, Osc::CV_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(10, 270), Port::OUTPUT, module, Osc::GATE_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(55, 270), Port::OUTPUT, module, Osc::TRIG_OUTPUT));
+
+    addChild(ModuleLightWidget::create<MediumLight<BlueLight>>(Vec(16, 103), module, Osc::GATE_IN_LIGHT));
+    addChild(ModuleLightWidget::create<MediumLight<BlueLight>>(Vec(62, 103), module, Osc::TRIG_IN_LIGHT));
+    addChild(ModuleLightWidget::create<MediumLight<BlueLight>>(Vec(40, 200), module, Osc::CV_OUT_LIGHT));
+    addChild(ModuleLightWidget::create<MediumLight<BlueLight>>(Vec(20, 250), module, Osc::GATE_OUT_LIGHT));
+    addChild(ModuleLightWidget::create<MediumLight<BlueLight>>(Vec(60, 250), module, Osc::TRIG_OUT_LIGHT));
+
+    addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 30, 365)));
+
 }
 
-
+Model *modelOsc = Model::create<Osc, OscWidget>("NauModular", "Osc", "Osc", CONTROLLER_TAG);

@@ -6,45 +6,19 @@ void init(rack::Plugin * p){
     //NauModular::init();
 
     plugin = p;
-    p->slug = "NauModular";
-#ifdef VERSION
+    p->slug = TOSTRING(SLUG);
     p->version = TOSTRING(VERSION);
-    
-#endif
     p->website = "http://naus3a.github.io/NauModular";
     p->manual = "http://naus3a.github.io/NauModular";
 
-    p->addModel(createModel<TensionWidget>("NauModular", 
-					    "Tension", 
-					    "Tension",
-					    FUNCTION_GENERATOR_TAG));
-
-    p->addModel(createModel<FunctionWidget>("NauModular",
-					    "Function",
-					    "Function",
-					    FUNCTION_GENERATOR_TAG));
-
-
-    p->addModel(createModel<PerlinWidget>("NauModular",
-					    "Perlin",
-					    "Perlin",
-					    NOISE_TAG));
-
-	p->addModel(createModel<S_h_itWidget>("NauModular",
-	                    "S&h(it)",
-	                    "S&h(it)",
-	                    SAMPLE_AND_HOLD_TAG));
-
-	p->addModel(createModel<BitHammerWidget>("NauModular",
-	                        "BitHammer",
-	                        "BitHammer",
-	                        LOGIC_TAG));
-   p->addModel(createModel<OscWidget>("NauModular",
-                            "Osc",
-                            "Osc",
-                            CONTROLLER_TAG));
+    p->addModel(modelTension);
+    p->addModel(modelFunction);
+    p->addModel(modelPerlin);
+	p->addModel(modelS_h_it);
+	p->addModel(modelBitHammer);
+    p->addModel(modelOsc);
 }
-/*  
+/*
 void NauModular::init(){
 #if defined(TARGET_OSX)
     host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &NauModular::cs);
@@ -76,7 +50,7 @@ void NauModular::getMonotonicTime(uint64_t & seconds, uint64_t & nanos){
 	nanos = now.tv_usec * 1000;
 #endif
 }
-  
+
 float NauModular::getTimef(){
     uint64_t seconds;
     uint64_t nanos;
@@ -85,3 +59,5 @@ float NauModular::getTimef(){
     return timef;
 }
 */
+
+

@@ -28,9 +28,11 @@ void Tension::step(){
     lights[BLINK_LIGHT].value = fabs(v)/12.0;
 }
 
-TensionWidget::TensionWidget(){
-    Tension * module = new Tension();
-    setModule(module);
+struct TensionWidget : ModuleWidget{
+	TensionWidget(Tension *module);
+};
+
+TensionWidget::TensionWidget(Tension *module) : ModuleWidget(module){
     box.size = Vec(6*RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     {
 	SVGPanel * panel = new SVGPanel();
@@ -39,14 +41,16 @@ TensionWidget::TensionWidget(){
 	addChild(panel);
     }
 
-    addChild(createScrew<ScrewSilver>(Vec(15,0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x-30,0)));
-    addChild(createScrew<ScrewSilver>(Vec(15,365)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x-30,365)));
-    
-    addParam(createParam<Davies1900hBlackKnob>(Vec(28, 87), module, Tension::VOLT_PARAM, -12.0, 12.0, 0.0));
+    addChild(Widget::create<ScrewSilver>(Vec(15,0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30,0)));
+    addChild(Widget::create<ScrewSilver>(Vec(15,365)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-30,365)));
 
-    addOutput(createOutput<PJ301MPort>(Vec(33, 275), module, Tension::VOLT_OUTPUT));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(28, 87), module, Tension::VOLT_PARAM, -12.0, 12.0, 0.0));
 
-    addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, Tension::BLINK_LIGHT));
+    addOutput(Port::create<PJ301MPort>(Vec(33, 275), Port::OUTPUT, module, Tension::VOLT_OUTPUT));
+
+    addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, Tension::BLINK_LIGHT));
 }
+
+Model *modelTension = Model::create<Tension, TensionWidget>("NauModular", "Tension", "Tension", FUNCTION_GENERATOR_TAG);
