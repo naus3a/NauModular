@@ -19,7 +19,7 @@ using namespace rack;
 extern Plugin * plugin;
 
 namespace NauModular{
-/*  
+/*
 #ifdef TARGET_OSX
    static clock_serv_t cs;
 #endif
@@ -29,27 +29,9 @@ namespace NauModular{
 */
 };
 
-struct TensionWidget : ModuleWidget{
-	TensionWidget();
-};
-
-struct FunctionWidget : ModuleWidget{
-	FunctionWidget();
-};
-
-struct PerlinWidget : ModuleWidget{
-	PerlinWidget();
-};
-
-struct S_h_itWidget : ModuleWidget{
-    S_h_itWidget();
-};
-
-struct BitHammerWidget : ModuleWidget{
-    BitHammerWidget();
-};
-
-struct OscWidget : ModuleWidget{
-    OscWidget();
-};
-
+extern Model *modelTension;
+extern Model *modelFunction;
+extern Model *modelPerlin;
+extern Model *modelS_h_it;
+extern Model *modelBitHammer;
+extern Model *modelOsc;
